@@ -13,19 +13,27 @@ export default class extends Component {
         super(props);
     }
 
+    getExpression() {
+        return this.props.expression;
+    }
+
+    getResult() {
+        return this.props.result;
+    }
+
 
     render() {
         return (
             <View style={styles.container}>
                 <View style={styles.expression}>
                     <Text style={styles.expression_font}>
-                        expression
+                        {this.getExpression()}
                     </Text>
                 </View>
 
                 <View style={styles.result}>
                     <Text style={styles.result_font}>
-                        result
+                        {this.getResult()}
                     </Text>
                 </View>
             </View>
