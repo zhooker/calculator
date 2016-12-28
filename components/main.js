@@ -23,8 +23,9 @@ export default class extends Component {
     }
 
     calResult(args1,args2,operator) {
+        console.log("111 calResult=" + args1 +","+args2+","+operator);
         switch (operator) {
-            case "+":
+            case '+':
                 return args1 + args2;
             case '-':
                 return args1 - args2;
@@ -43,14 +44,57 @@ export default class extends Component {
         let newExpression = this.state.expression;
         let newResult;
 
-        let sum =  Number.parseInt(newExpression[0]);
-        for (let i=1;i<newExpression.length;i+=2) {
-            let args = Number.parseInt(newExpression[i+1]);
-            if(!this.isOperator(newExpression[i]) || Number.isNaN(args)) {
-                newResult =  'Error';
-                break;
+        let operators = [],number = '';
+        for (let i=0;i<newExpression.length;i++) {
+            console.log("number=" + number +"," + newExpression[i]);
+            if(newExpression[i] >= '0' && newExpression[i] <= '9')
+                number+=newExpression[i];
+            else {
+                operators.push(number);
+                operators.push(newExpression[i]);
+                number = '';
             }
-            sum += this.calResult(sum,args,newExpression[i]);
+        }
+        if(number)
+            operators.push(number);
+
+        console.log("111 operators=" + operators);
+
+        for (let i=0;i<operators.length;i++) {
+            if(operators[i] == '*' || operators[i] == '/') {
+                if (i <= 0 || i >= operators.length) {
+                    newResult = 'Error';
+                    break;
+                }
+                let arg1 = Number.parseInt(operators[i-1]);
+                let arg2 = Number.parseInt(operators[i+1]);
+
+                if(Number.isNaN(arg1) || Number.isNaN(arg2)) {
+                    newResult = 'Error';
+                    break;
+                }
+
+                let result = this.calResult(arg1,arg2,operators[i]);
+                operators[i-1] = result;
+                operators.splice(i,2);
+                i++;
+            }
+        }
+
+        console.log("222 operators=" + operators);
+
+        let sum =  Number.parseInt(operators[0]);
+        if(operators.length > 2) {
+            for (let i=1;i<operators.length;i+=2) {
+                if(this.isOperator(operators[i])) {
+                    let arg = Number.parseInt(operators[i+1]);
+                    sum =  this.calResult(sum,arg,operators[i]);
+                    console.log("111 sum=" + sum +"," +arg);
+                } else {
+                    newResult = 'Error';
+                    break;
+                }
+            }
         }
 
         if(!newResult)
